@@ -1,0 +1,64 @@
+---
+- hosts: localhost
+  become: yes
+  vars:
+    apache_version: 2.6
+    motd_warning: "WARNING: used by ICT faculty/students only.\n"
+    testserver: yes
+  tasks:
+    - name: install apache
+      action: yum name=httpd state=installed
+    
+    - name: restart apache
+      service: 
+        name: httpd
+        state: restarted
+
+    - name: install epel release
+      action: yum name=epel-release state=present
+
+    - name: remove tree
+      action: yum name=tree state=absent
+
+    - name: set hostname
+      hostname:
+        name: "kgjoni"
+    
+    - name: new user
+      user:
+        name: "kgjoni"
+        state: present
+        groups: wheel
+        shell: /bin/bash
+        create_home: yes
+
+    - name : ssh for new user
+      file:
+        path: "/home/kgjoni/.ssh"
+        state: directory
+        mode: "0700"
+        owner: "kgjoni"
+        group: "kgjoni"
+
+    - name: ssh without password
+      authorized_key:
+        user: "kgjoni"
+        state: present
+        key: "{{ lookup('file', '/home/student/.ssh/id_rsa.pub') }}"
+
+    - name: created directories
+      file:
+        path: "/home/kgjoni/ops445/{{ item }}"
+        state: directory
+        owner: "kgjoni"
+        group: "kgjoni"
+      loop:
+        -
+        -
+        -
+        -
+        -
+        -
+        -
+        -
+
